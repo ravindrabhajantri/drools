@@ -1,0 +1,25 @@
+<persistence version="2.0"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd
+                      http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
+	xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/persistence">
+	<persistence-unit name="org.drools.persistence.jpa"
+		transaction-type="JTA">
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<jta-data-source>jdbc/BitronixJTADataSource</jta-data-source>
+		<class>org.drools.persistence.info.SessionInfo</class>
+ 		<!-- <class>org.drools.persistence.info.WorkItemInfo</class>
+		<class>org.drools.persistence.processinstance.ProcessInstanceInfo</class>
+		<class>org.drools.persistence.processinstance.ProcessInstanceEventInfo</class> -->
+		<properties>
+			<property name="hibernate.dialect"
+				value="org.hibernate.dialect.MariaDBDialect" />
+			<property name="hibernate.max_fetch_depth" value="3" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.transaction.manager_lookup_class"
+				value="org.hibernate.transaction.BTMTransactionManagerLookup" />
+		</properties>
+	</persistence-unit>
+</persistence>

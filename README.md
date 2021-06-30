@@ -37,7 +37,7 @@ rule "Grade Fail"
 ```
 
 ## Before run
-Change Maria DB URL hardcoded at NewDroolsSessionOnMariaDb.java and ReloadSavedDroolsSessionFromMariaDb.java with actuals.
+Change Maria DB URL at src/main/resources/config.properties with actuals.
 
 
 ## How to run

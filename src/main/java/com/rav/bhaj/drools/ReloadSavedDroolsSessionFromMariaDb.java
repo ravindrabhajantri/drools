@@ -1,15 +1,12 @@
 package com.rav.bhaj.drools;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.Properties;
 
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.persistence.Persistence;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import org.kie.api.KieBase;
@@ -34,11 +31,13 @@ public class ReloadSavedDroolsSessionFromMariaDb {
 	public static final String CORRELATION_DROOLS_TRANSACTIONS = "jdbc/BitronixJTADataSource";
 	public static final String DRL_LOCATION = "rules/Grading.drl";
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReloadSavedDroolsSessionFromMariaDb.class);
+	private static Properties properties;
 
 	public static void main(String[] args) throws InterruptedException {
+		loadProperties();
 		initializeDataSource();
 		KieServices kieServices = KieServices.Factory.get();
-		KieSession kieSession = kieServices.getStoreServices().loadKieSession(652L, getKieBase(kieServices), null,
+		KieSession kieSession = kieServices.getStoreServices().loadKieSession(102L, getKieBase(kieServices), null,
 				getKieEnvironment(kieServices));
 		UserTransaction correlationTransactions;
 		try {
@@ -57,36 +56,21 @@ public class ReloadSavedDroolsSessionFromMariaDb {
 
 			correlationTransactions.commit();
 			kieSession.destroy();
-		} catch (NamingException e) {
-			e.printStackTrace();
-		} catch (NotSupportedException e) {
-			e.printStackTrace();
-		} catch (SystemException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (RollbackException e) {
-			e.printStackTrace();
-		} catch (HeuristicMixedException e) {
-			e.printStackTrace();
-		} catch (HeuristicRollbackException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			LOGGER.error("Error during kiesession operations: {} ", e.getLocalizedMessage());
 		}
 	}
 
 	private static void initializeDataSource() {
 		PoolingDataSource ds = new PoolingDataSource();
 		ds.setUniqueName(CORRELATION_DROOLS_TRANSACTIONS);
-		ds.setClassName("org.mariadb.jdbc.MariaDbDataSource");
-		ds.setMaxPoolSize(3);
+		ds.setClassName(properties.getProperty("pooling.data.source.name"));
+		ds.setMaxPoolSize(Integer.parseInt(properties.getProperty("pooling.size")));
 		ds.setAllowLocalTransactions(true);
-		ds.getDriverProperties().put("user", "root");
-		ds.getDriverProperties().put("password", "root");
-		ds.getDriverProperties().put("url", "jdbc:mariadb://localhost:3306/DROOLS?createDatabaseIfNotExist=true");
+		ds.getDriverProperties().put("user", properties.getProperty("db.user.name"));
+		ds.getDriverProperties().put("password", properties.getProperty("db.user.password"));
+		ds.getDriverProperties().put("url", properties.getProperty("db.url"));
 		ds.init();
-
 	}
 
 	private static Environment getKieEnvironment(KieServices kieServices) {
@@ -110,4 +94,13 @@ public class ReloadSavedDroolsSessionFromMariaDb {
 		return kieContainer.getKieBase();
 	}
 
+	private static void loadProperties() {
+		try (InputStream input = NewDroolsSessionOnMariaDb.class.getClassLoader()
+				.getResourceAsStream("config.properties")) {
+			properties = new Properties();
+			properties.load(input);
+		} catch (IOException ex) {
+			LOGGER.error("Error during configuration loading: {} ", ex.getLocalizedMessage());
+		}
+	}
 }

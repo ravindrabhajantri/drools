@@ -1,0 +1,35 @@
+package rules
+
+import com.rav.bhaj.drools.model.Student
+
+rule "Grade Fail"
+	when 
+		student: Student(marksObtained < 35)
+	then
+		student.setPassGrade("fail");
+		System.out.println("Print from rule execution: Grade for student "+student.getStudentName()+" is Fail");
+	end
+	
+rule "Grade Second Class"
+	when 
+		student: Student(marksObtained > 35 && marksObtained < 60)
+	then
+		student.setPassGrade("Second Class");
+		System.out.println("Print from rule execution: Grade for student "+student.getStudentName()+" is Second Class");
+	end
+
+rule "Grade First Class"
+	when 
+		student: Student(marksObtained > 59 && marksObtained < 70)
+	then
+		student.setPassGrade("First Class");
+		System.out.println("Print from rule execution: Grade for student "+student.getStudentName()+" is First Class");
+	end
+
+rule "Grade Distinction"
+	when 
+		student: Student(marksObtained > 69 )
+	then
+		student.setPassGrade("Distinction");
+		System.out.println("Print from rule execution: Grade for student "+student.getStudentName()+" is Distinction");
+	end

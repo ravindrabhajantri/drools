@@ -20,5 +20,6 @@
 
   <modules>
   	<module>drools-persistance-mariadb</module>
+	<module>drools-persistance-h2</module>
   </modules>
 </project>

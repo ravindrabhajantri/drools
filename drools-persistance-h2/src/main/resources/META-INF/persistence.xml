@@ -1,0 +1,27 @@
+<persistence version="2.0"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd
+                      http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
+	xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/persistence">
+	<!-- persistence name should match entity manager name that is getting created. -->
+	<persistence-unit name="org.drools.persistence.jpa"
+		transaction-type="JTA">
+		<!-- transaction-type="RESOURCE_LOCAL"> https://stackoverflow.com/questions/17331024/persistence-xml-different-transaction-type-attributes/17331863#17331863-->
+		<!-- <provider>org.hibernate.ejb.HibernatePersistence</provider> if we're using Hibernate version 4.2 or older --> 
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<jta-data-source>jdbc/BitronixJTADataSource</jta-data-source>
+		<class>org.drools.persistence.info.SessionInfo</class>
+		<class>org.drools.persistence.info.WorkItemInfo</class>
+		<class>com.rav.bhaj.drools.entity.SessionInfoDetails</class>
+		<properties>
+			<property name="hibernate.dialect"
+				value="org.hibernate.dialect.H2Dialect" />
+			<property name="hibernate.max_fetch_depth" value="3" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.transaction.manager_lookup_class"
+				value="org.hibernate.transaction.BTMTransactionManagerLookup" />
+		</properties>
+	</persistence-unit>
+</persistence>	
